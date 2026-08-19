@@ -1,23 +1,25 @@
+import os
 import pandas as pd
 import numpy as np
+import PyPluMA
 from sklearn import svm
 
 class SVCPlugin:
     def input(self, inputfile):
         global parameters, spdata_train, spdata_test, ytrain
-        parameters = pd.read_table(inputfile, sep="\t", header=None, index_col=0, squeeze=True)
+        parameters = pd.read_table(inputfile, sep="\t", header=None, index_col=0).squeeze("columns")
         if 'training' in parameters:
-            spdata_train = pd.read_csv(parameters['training'], index_col=0)
+            spdata_train = pd.read_csv(os.path.join(PyPluMA.prefix(), parameters['training']), index_col=0)
             print("Training data loaded")
         else:
             print("Error: 'training' not found in parameters")
         if 'testing' in parameters:
-            spdata_test = pd.read_csv(parameters['testing'], index_col=0)
+            spdata_test = pd.read_csv(os.path.join(PyPluMA.prefix(), parameters['testing']), index_col=0)
             print("Testing data loaded")
         else:
             print("Error: 'testing' not found in parameters")
         if 'traininggroups' in parameters:
-            ytrain = np.loadtxt(parameters['traininggroups'], delimiter=',')
+            ytrain = np.loadtxt(os.path.join(PyPluMA.prefix(), parameters['traininggroups']), delimiter=',')
             print("Training labels loaded")
         else:
             print("Error: 'traininggroups' not found in parameters")
